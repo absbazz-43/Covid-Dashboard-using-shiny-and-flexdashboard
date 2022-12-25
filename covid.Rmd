@@ -1,0 +1,110 @@
+---
+title: "Covid Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+
+```
+
+
+```{r}
+data=read.csv(file.choose())
+sum(data$Total.deaths)
+```
+
+Basic analysis
+==================
+
+Columns
+-----------------------------------------------------------------------
+
+### Total death
+
+```{r}
+gauge(round(sum(data$Total.deaths),
+            digits = 2),
+            min = 0,
+            max = 200,
+            gaugeSectors(success = c(0, 20),
+                         warning = c(20, 100),
+                         danger = c(100, 200),
+                         colors = c("green", "yellow", "red")))
+```
+
+
+
+### Total recovery
+
+```{r}
+valueBox(sum(data$Total.recovered),icon="fa-thumbs-up")
+
+```
+
+
+### Total test
+
+```{r}
+valueBox(sum(data$Total.Tests),icon="fa-calculator")
+
+```
+
+
+### Total New cases
+
+```{r}
+valueBox(sum(data$Daily.new.confirmed.cases),icon="fa-tag")
+
+```
+
+
+
+Row {data-width=150}
+-------------------------------
+
+### Date 
+
+
+```{r}
+ggplot(data)+geom_line(aes(x=as.Date(Date),y=Daily.new.confirmed.cases))+geom_point(aes(x=as.Date(Date),y=Daily.new.confirmed.cases,color="red"))
+```
+
+### Date 
+
+
+```{r}
+ggplot(data)+geom_line(aes(x=as.Date(Date),y=Daily.new.deaths))+geom_point(aes(x=as.Date(Date),y=Daily.new.deaths,color="red"))
+```
+
+
+
+
+### tests 
+
+```{r}
+ggplot(data)+geom_line(aes(x=Total.Tests,y=Total.deaths))+geom_point(aes(x=Total.Tests,y=Total.deaths,color="red"))
+```
+
+Row
+-------------------------------
+### tests 
+
+
+```{r}
+ggplot(data)+geom_line(aes(x=Total.Tests,y=Total.recovered))+geom_point(aes(x=Total.Tests,y=Total.recovered,color="red"))
+```
+
+
+Data summary 
+============================
+
+```{r}
+library(rpivotTable)
+rpivotTable(data = data)
+```
+
